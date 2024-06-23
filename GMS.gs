@@ -324,7 +324,7 @@ function gms_LegionEdit(e) {
                 sheet.getRange(+row + +i, charJobCol).setValue(charInfo[1]);
               }
               sheet.getRange(+row + +i, charLevelCol).setValue(charInfo[0]);
-              sheet.getRange(+row + +i, charNameStartCol - 1).setValue("=image(\""+ charInfo[2] + "\")");
+              // sheet.getRange(+row + +i, charNameStartCol - 1).setValue("=image(\""+ charInfo[2] + "\")");
             }
           }
 
@@ -500,7 +500,7 @@ function gms_allRefreshLegionList() {
       } else {
         sheet.getRange(+charNameStartRow + +i, charJobCol).setValue(charInfo[1]);
       }
-      sheet.getRange(+charNameStartRow + +i, charNameStartCol -1).setValue("=image(\""+ charInfo[2] + "\")");
+      // sheet.getRange(+charNameStartRow + +i, charNameStartCol -1).setValue("=image(\""+ charInfo[2] + "\")");
       
       // 레벨이 입력된 레벨보다 낮을 경우 수정하지 않고 메모로 표시
       var lastLevel = Number(sheet.getRange(+charNameStartRow + +i, charLevelCol).getValues());
