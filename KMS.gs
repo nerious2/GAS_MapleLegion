@@ -13,7 +13,7 @@ const VERSION = "20231226-001";
 
 // new variable
 
-const MAPLESTORY_APIKEY = '여기에 nexon api 사이트에서 발급받은 API KEY 입력';
+const MAPLESTORY_APIKEY = 'live_b27763e12fe1e782436f3eda65473a951b57c5a806ac1582a18ea38e922545ab5247416d40421cd8b096a14d6920c612';
 const MAPLESTORY_API = 'https://open.api.nexon.com/maplestory/v1';
 const GET_OCID = '/id';
 const GET_CHAR_BASIC = '/character/basic';
@@ -95,7 +95,7 @@ function createSpreadsheetOpenTrigger() {
 
 // NEW API (Open API) =========================================================================================================
 function test() {
-  Logger.log(getCharInfoNew(getCharOCID('테스트할닉네임입력')));
+  Logger.log(getCharInfoNew(getCharOCID('TEST NICKNAME')));
 }
 
 
@@ -186,11 +186,11 @@ function getCharInfoNew(ocid) {
 }
 
 
-// OLD API (웹 파싱) =============================================================================================================
+// OLD API (웹 파싱=============================================================================================================
 
 
 function testOld() {
-  Logger.log(getCharUrl('테스트할닉네임입력', true));
+  Logger.log(getCharInfo(getCharUrl('TEST NICKNAME', true)));
 }
 
 
@@ -601,7 +601,7 @@ function unionEdit(e) {
         if (charUrl == null) {
           // API 가져오기 실패 -> 랭킹페이지 URL 가져오기 시도
           charUrl = getCharUrl(nonExistList[i], isReboot);
-          if (tempCharUrl == null) {
+          if (charUrl == null) {
             charUrl = 'error';
           } else {
             isOldRank = true;

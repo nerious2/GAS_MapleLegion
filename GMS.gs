@@ -3,9 +3,9 @@
 https://www.nexon.com/api/maplestory/no-auth/v1/ranking/na?type=job&reboot_index=0&page_index=1&character_name=
 
 Magician
-불독 12 / 2
-썬콜 22 / 2
-비숍 32 / 2
+불독 jobDetail 12 jobID 2
+썬콜 jobDetail 22 
+비숍 jobDetail 32 jobID 2
 
 Warrior
 히어로 12 / 1
@@ -86,7 +86,7 @@ function gms_createSpreadsheetOpenTrigger() {
 
 
 function testGMS() {
-  Logger.log(parseMapleStoryRanking("na", "테스트할닉네임입력"));
+  Logger.log(gms_parseMapleStoryRanking("na", "TEST NICKNAME"));
 }
 
 // GMS api =======================================================================
@@ -455,6 +455,8 @@ function gms_allRefreshLegionList() {
     }
   });
 
+  Logger.log(existList);
+
   var totalRefreshCount = 0;
 
   for (var i in existList) {
@@ -548,8 +550,106 @@ function gms_onOpen() {
   dataSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Data');
 
   const sheetVersion = dataSheet.getRange('D2').getValues()[0][0];
+  const noticeCheck = dataSheet.getRange('E2').getValues()[0][0];
   
+  // 선행 테스트 -> 정식버전 전환 및 우르스 메이플투어 버그 수정
+  if (sheetVersion == '2025.01.26.001') {
+    if (noticeCheck != "1") {
+      var ui = SpreadsheetApp.getUi();
+      var response = ui.alert('중요 공지사항', '우르스, 메이플투어 가격이 주간이 아닌 일간 가격으로 대입되는 문제가 있어 문서를 다시 배포합니다.\nhttps://gall.dcinside.com/heroic/70290', ui.ButtonSet.OK);
 
+      response = ui.alert('중요 공지사항', '공지사항을 확인하였습니까? 작업을 수행하였으면 확인을 눌러 이 메시지를 다시 보지 않습니다.', ui.ButtonSet.YES_NO);
+
+      // Process the user's response.
+      if (response == ui.Button.YES) {
+        dataSheet.getRange('E2').setValue('1');
+      } else {
+        Logger.log('The user clicked "No" or the close button in the dialog\'s title bar.');
+      }
+    }
+  }
+  // 파풀라투스 철자 수정
+  else if (sheetVersion == '2025.01.26.002') {
+
+
+    // 직접 수정
+    const bossSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Boss Crystals');
+    bossSheet.getRange('E15:F15').setValue('Papulatus (Normal)');
+    bossSheet.getRange('E29:F29').setValue('Papulatus (Chaos)');
+
+    dataSheet.getRange('D2').setValue('2025.01.26.003')
+    dataSheet.getRange('E2').setValue('');
+
+
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Notice', 'There is a typo in Papulatus and it is automatically corrected.\n\n파풀라투스 표기 오류가 있어 자동으로 수정합니다.', ui.ButtonSet.OK);
+
+    // response = ui.alert('중요 공지사항', '공지사항을 확인하였습니까? 작업을 수행하였으면 확인을 눌러 이 메시지를 다시 보지 않습니다.', ui.ButtonSet.YES_NO);
+  
+  }
+
+  // Block & Effect lv200 해적 레벨 표기오류 수정
+  else if (sheetVersion == '2025.01.26.003') {
+
+
+    // 직접 수정
+    const bossSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Block & Effect');
+    bossSheet.getRange('AG101').setValue('=IFERROR(QUERY(SORT(FILTER(Legion!$C$18:$O, Legion!$N$18:$N=TRUE, Legion!$M$18:$M="SS", Legion!$J$18:$J=$E$98), COLUMN(Legion!$O$12)-COLUMN(Legion!$C$12)+1, FALSE, 1, TRUE), "SELECT Col1, Col13"), "")');
+
+    dataSheet.getRange('D2').setValue('2025.01.26.004')
+    dataSheet.getRange('E2').setValue('');
+
+
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Notice', 'Automatically fixes an issue where the lv200 Pirate level is not displayed correctly in the Block & Effect sheet.\n\nBlock & Effect 시트에서 lv200 해적의 레벨이 재대로 표기되지 않는 현상을 자동으로 수정합니다.', ui.ButtonSet.OK);
+
+    // response = ui.alert('중요 공지사항', '공지사항을 확인하였습니까? 작업을 수행하였으면 확인을 눌러 이 메시지를 다시 보지 않습니다.', ui.ButtonSet.YES_NO);
+  
+  }
+  // 월간 계산 수정
+  else if (sheetVersion == '2025.01.26.004') {
+
+
+    // 직접 수정
+    const bossSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Boss Crystals');
+    bossSheet.getRange('U4:V4').setValue('=SUM(Q34,X34,AE34,Q58,X58,AE58,Q82,X82,AE82,Q106,X106,AE106,Q130,X130,AE130) + $N$8*$F$4 + $N$9*$F$4');
+
+    dataSheet.getRange('D2').setValue('2025.01.26.005')
+    dataSheet.getRange('E2').setValue('');
+
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Notice', 'There is a problem with the Total Monthly (Estimates) formula and it will be corrected automatically.\n\n월간 총합 (예상치)  수식에 문제가 있어 자동으로 수정합니다.', ui.ButtonSet.OK);
+
+    // response = ui.alert('중요 공지사항', '공지사항을 확인하였습니까? 작업을 수행하였으면 확인을 눌러 이 메시지를 다시 보지 않습니다.', ui.ButtonSet.YES_NO);
+  
+  }
+  // 일일 결정석 문제 수정
+  else if (sheetVersion == '2025.01.26.005') {
+
+
+    // 직접 수정
+    const bossSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Boss Crystals');
+    
+    var tempStr = '=IF($P$17, 5*7, 0)+IF($W$17, 5*7, 0)+IF($AD$17, 5*7, 0)+IF($P$41, 5*7, 0)+IF($W$41, 5*7, 0)+IF($AD$41, 5*7, 0)+IF($P$65, 5*7, 0)+IF($W$65, 5*7, 0)+IF($AD$65, 5*7, 0)+IF($P$89, 5*7, 0)+IF($W$89, 5*7, 0)+IF($AD$89, 5*7, 0)+IF($P$113, 5*7, 0)+IF($W$113, 5*7, 0)+IF($AD$113, 5*7, 0)' + String.fromCharCode(10) + 
+    '+COUNTIF($Q$18:$Q$31, "<>0")+COUNTIF($X$18:$X$31, "<>0")+COUNTIF($AE$18:$AE$31, "<>0")' + String.fromCharCode(10) +
+    '+COUNTIF($Q$42:$Q$55, "<>0")+COUNTIF($X$42:$X$55, "<>0")+COUNTIF($AE$42:$AE$55, "<>0")' + String.fromCharCode(10) +
+    '+COUNTIF($Q$42:$Q$55, "<>0")+COUNTIF($X$42:$X$55, "<>0")+COUNTIF($AE$42:$AE$55, "<>0")' + String.fromCharCode(10) +
+    '+COUNTIF($Q$66:$Q$79, "<>0")+COUNTIF($X$66:$X$79, "<>0")+COUNTIF($AE$66:$AE$79, "<>0")' + String.fromCharCode(10) +
+    '+COUNTIF($Q$90:$Q$103, "<>0")+COUNTIF($X$90:$X$103, "<>0")+COUNTIF($AE$90:$AE$103, "<>0")' + String.fromCharCode(10) +
+    '+COUNTIF($Q$114:$Q$127, "<>0")+COUNTIF($X$114:$X$127, "<>0")+COUNTIF($AE$114:$AE$127, "<>0")';
+
+
+    bossSheet.getRange('K2:L4').setValue(tempStr);
+
+    dataSheet.getRange('D2').setValue('2025.01.26.006')
+    dataSheet.getRange('E2').setValue('');
+
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Notice', 'Total Crystals calculation for Daily Bosses is incorrect and will be corrected automatically.\n\n일일보스에 대한 주간 결정석 계산에 문제가 있어 자동으로 수정합니다.', ui.ButtonSet.OK);
+
+    // response = ui.alert('중요 공지사항', '공지사항을 확인하였습니까? 작업을 수행하였으면 확인을 눌러 이 메시지를 다시 보지 않습니다.', ui.ButtonSet.YES_NO);
+  
+  }
   // if (sheetVersion != '2023.12.26.001') {
 
   //   var ui = SpreadsheetApp.getUi();
